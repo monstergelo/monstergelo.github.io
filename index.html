@@ -78,7 +78,7 @@
 
 				<div class="w3-container w3-border w3-padding-16 w3-margin-top" id="date-window">
 					
-					<h2>Timeline</h2>
+					<h4>Timeline</h4>
 				
 					<input class="w3-input w3-border w3-half" type="number" min="0" max="200" step="1" value="0" name="start" id="startDate"/>
 
@@ -495,6 +495,7 @@ async function main(){
 			text.innerHTML = listKey[i]
 			checkbox.checked = true
 			checkbox.classList.add("w3-check");
+			text.classList.add("w3-small");
 			checkbox.onchange = function(){changeFilter(this)}
 
 			div.classList.add("w3-half")
@@ -532,13 +533,7 @@ async function main(){
 			}
 		}
 
-		console.log('popo')
-		console.log(currentLayers)
-
 		var currentLayers = stack(drawnMap);
-
-		console.log(currentLayers)
-		console.log(listKey)
 
 		d3.selectAll('.x_axis')
 		.transition()
@@ -575,13 +570,13 @@ async function main(){
 		var start = document.getElementById("startDate").value;
 		var end = document.getElementById("endDate").value;
 
-		var realStart = (start*1) - (fakex.domain()[0]*1)
-		var realEnd = (end*1) - (fakex.domain()[0]*1)
-		console.log(realStart)
-		console.log(realEnd)
+		var realStart = (start*1) - (d3.min(yearlist)*1)
+		var realEnd = (end*1) - (d3.min(yearlist)*1)
+
+		console.log('fakex.domain()[0]*1')
+		console.log(fakex.domain()[0]*1)
 
 		x.domain([realStart, realEnd])
-		console.log(start*1 + d3.min(yearlist)*1)
 		fakex.domain([d3.min(yearlist)*1 + realStart*1, d3.min(yearlist)*1 + realEnd*1]);
 		xAxis = d3.axisBottom(fakex).tickArguments([15]).tickFormat(d3.format("d"));
 
