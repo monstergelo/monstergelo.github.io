@@ -1,24 +1,691 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Mah Site!</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-</head>
-<body>
+<title>Streamgraph</title>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">	
+<style>
+	.header{
+    	height: 100px;
+   		font-size: 80px;
+		text-align: center;
+	}
 
-<div class="jumbotron">
-  <h1>Bootstrap Tutorial</h1>      
-  <p>Mah Jumbotron</p>
-</div>
+	.footer{
+    	height: 100px;
+   		
+   		text-align: center;
+	}
 
-<div class="container">
-  <p>Hello World!</p>      
-  <p>Hi</p>      
-</div>
+	.main{
+		display: flex;
+		padding: 15px;
+	}
+
+	.main div{
+		display: inline-block;
+	}
+
+	.control-panel{
+   		padding: 15px; 
+   		vertical-align: top;
+   		width:100%;
+   		height: 100%;
+	}
+
+	.control-panel div{
+   		display: block;
+	}
+
+	.control-panel select{
+   		vertical-align: top;
+   		display: block;
+	}
+
+	#filter-content input{
+		
+	}
+</style>
+
+<body class="w3-light-grey">
+	<div class="w3-cell-row">
+		<div class="header" id="title">
+		</div>
+	</div>
+
+	<div class="main w3-cell-row">
+		<div class="w3-cell">
+			<div class="gardenDiv w3-cell-row">
+			</div>
+
+			<div class="w3-cell-row footer" id="narration">
+			</div>
+		</div>
+
+		<div class="w3-cell">
+			<div class="control-panel w3-panel w3-border w3-round-xlarge w3-teal">
+				<div id="view-mode">
+					<label>View Mode</label>
+					<select class="w3-select" id="mode">
+					  <option value="performance">performance</option>
+					  <option value="genre">genre</option>
+					</select>
+
+					<label>Category</label>
+					<select class="w3-select w3-border" id="option">
+					  <option value="action">action</option>
+					  <option value="adventure">adventure</option>
+					  <option value="top-sale">top-sale</option>
+					</select>
+				</div>
+
+				<div class="w3-container w3-border w3-padding-16 w3-margin-top" id="date-window">
+					
+					<h2>Timeline</h2>
+				
+					<input class="w3-input w3-border w3-half" type="number" min="0" max="200" step="1" value="0" name="start" id="startDate"/>
+
+					<input class="w3-input w3-border w3-half" type="number" min="0" max="200" step="1" value="100" name="end" id="endDate"/>
+				</div>
+
+				<div id="filter-content">
+					
+				</div>
+			</div>
+		</div>
+	</div>
 
 </body>
-</html>
+
+<script>
+async function main(){ 
+	var supplementary = {
+		'action':{
+			'narration': 'dummy0',
+			'title': 'title dummy0'
+		},
+		'adventure':{
+			'narration': 'dummy1',
+			'title': 'title dummy1'
+		},
+		'fighting':{
+			'narration': 'dummy2',
+			'title': 'title dummy2'
+		},
+		'misc':{
+			'narration': 'dummy3',
+			'title': 'title dummy3'
+		},
+		'platformer':{
+			'narration': 'dummy4',
+			'title': 'title dummy4'
+		},
+		'puzzle':{
+			'narration': 'dummy5',
+			'title': 'title dummy5'
+		},
+		'racing':{
+			'narration': 'dummy6',
+			'title': 'title dummy6'
+		},
+		'roleplaying':{
+			'narration': 'dummy7',
+			'title': 'title dummy7'
+		},
+		'shooter':{
+			'narration': 'dummy8',
+			'title': 'title dummy8'
+		},
+		'simulation':{
+			'narration': 'dummy9',
+			'title': 'title dummy9'
+		},
+		'sport':{
+			'narration': 'dummy10',
+			'title': 'title dummy10'
+		},
+		'strategy':{
+			'narration': 'dummy11',
+			'title': 'title dummy11'
+		},
+		'all sales':{
+			'narration': 'dummy12',
+			'title': 'title dummy12'
+		},
+		'excellent':{
+			'narration': 'dummy13',
+			'title': 'title dummy13'
+		},
+		'very good':{
+			'narration': 'dummy14',
+			'title': 'title dummy14'
+		},
+		'well above average':{
+			'narration': 'dummy15',
+			'title': 'title dummy15'
+		},
+		'good':{
+			'narration': 'dummy16',
+			'title': 'title dummy16'
+		},
+		'fairly good':{
+			'narration': 'dummy17',
+			'title': 'title dummy17'
+		},
+		'above average':{
+			'narration': 'dummy18',
+			'title': 'title dummy18'
+		},
+		'average':{
+			'narration': 'dummy19',
+			'title': 'title dummy19'
+		},
+		'below average':{
+			'narration': 'dummy20',
+			'title': 'title dummy20'
+		},
+		'poor':{
+			'narration': 'dummy21',
+			'title': 'title dummy21'
+		},
+		'not good at all':{
+			'narration': 'dummy22',
+			'title': 'title dummy22'
+		},
+		'well below average':{
+			'narration': 'dummy23',
+			'title': 'title dummy23'
+		},
+		'awful':{
+			'narration': 'dummy24',
+			'title': 'title dummy24'
+		}
+	}
+
+
+    var mymap = await d3.csv('datagenre.csv')
+
+    function changeNaration(category){
+    	var title = document.getElementById('title')
+    	var narration = document.getElementById('narration')
+
+    	title.innerHTML = supplementary[category]['title']
+    	narration.innerHTML = supplementary[category]['narration']
+    }
+
+    function getYearList(map){
+    	var r = [];
+    	for (var i = 0; i < map.length; i++) {
+    		r.push(map[i].Year)
+    	}
+
+    	return r;
+    }
+
+	function toObject(arr, key) {
+		var r = []
+		var obj = {}
+		for (var i = 0; i < arr.length; ++i){
+			var obj = {}
+			obj[key] = arr[i]
+			r.push(obj)
+		}
+			
+		return r;
+	}
+
+	function changeMode(option){
+		var options;
+		console.log(option.value)
+		if(option.value == "genre"){
+			options = ['-- select an option --', 'action', 'adventure', 'fighting', 'misc', 'platformer',
+			'puzzle', 'racing', 'roleplaying', 'shooter', 'simulation', 'sport',
+			'strategy']
+			console.log("wawa")
+		}
+		else if(option.value == "performance"){
+			options = ['-- select an option --','all sales', 'excellent', 'very good', 'well above average', 'good', 
+			'fairly good', 'above average', 'average', 'below average', 'poor', 'not good at all', 'well below average', 'awful']
+		}
+
+		var dropdownlist = document.getElementById("option");
+		dropdownlist.innerHTML = "";
+
+		for (var i = 0; i < options.length; i++) {
+			var c = document.createElement("option");
+			c.text = options[i];
+			c.value = options[i];
+
+			dropdownlist.options.add(c);
+		}
+	}
+
+	function changeFilter(checkbox){
+		console.log(checkbox.value)
+		if(checkbox.checked){
+			console.log('wiwi')
+			remove(listDeactive, checkbox.name);
+			console.log(listDeactive)
+			filterSVG();
+		}
+		else{
+			console.log('wawa')
+			listDeactive.splice(checkbox.value, 0, checkbox.name );
+			console.log(listDeactive)
+			filterSVG();
+		}
+	}
+
+	function createLegend(){
+		
+		console.log("legend")
+		var details = d3.select('body').append('g')
+		.attr("class", "details")
+		.style("position", "absolute")
+		.style("z-index", "10")
+		.style("display", "none")
+	  
+		var rect = details.append("rect")
+		.style("background-color", 'grey')
+		.style('opacity', '1')
+		.style('display', 'block')
+		.style('border-radius', '5px')
+		.style('padding', '5px')
+
+		rect.append("div")
+		.style('opacity', '1')
+		.style('display', 'block')
+
+		rect.selectAll('div')
+		.append('span')
+		.attr('class', 'details-color')
+		.style("background-color", 'red')
+		.style('height', '10px')
+		.style('width', '10px')
+		.style('display', 'inline-block');
+
+		rect.selectAll('div')
+		.append('text')
+		.attr('class', 'details-key')
+		.text(' action')
+
+		rect.append("text")
+		.style('opacity', '1')
+		.attr('class', 'details-value')
+		.style('display', 'block')
+		.text('123')
+		
+		rect.append("text")
+		.style('opacity', '1')
+		.attr('class', 'details-year')
+		.style('display', 'block')
+		.text('2088')
+
+		d3.selectAll('.graph').selectAll('g')
+		.on("mouseover", function() { details.style("display", null); })
+	    .on("mouseout", function() { details.style("display", 'none');  })
+	    .on("mousemove", function(d, i){
+			var mouse = d3.mouse(this)
+			var xValue = Math.floor(x.invert(mouse[0]));
+
+			var yTop = d[xValue][1]
+			var yBtm = d[xValue][0]
+			var yValue = Math.floor(yTop-yBtm)
+			var year = d3.min(yearlist)*1 + xValue
+
+			var xPosition = mouse[0];
+			var yPosition = mouse[1];
+			details.style("top", (yPosition+20)+"px").style("left",(xPosition)+"px")
+
+			details.selectAll('.details-key').text(' '+listKey[i])
+			details.selectAll('.details-value').text('sales: '+yValue+' million')
+			details.selectAll('.details-year').text('year: '+ year)
+			details.selectAll('.details-color').style("background-color", c10(i))
+	    })
+
+		// var colorLegend = legend.append('g')
+		// 	.attr("class", "colorLegend")
+		// 	.attr("font-family", "sans-serif")
+		// 	.attr("font-size", 10)
+		//     .attr("text-anchor", "end")
+		//     .selectAll("g")
+		//     .data(listKey.slice())
+		//     .enter()
+	 //    .append("g")
+	 //    	.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+		// colorLegend.append("rect")
+		//   .attr("x", width - 100)
+		//   .attr("y", 19)
+		//   .attr("width", 19)
+		//   .attr("height", 19)
+		//   .attr("fill", function (d,i) {return c10(i)})
+
+		// colorLegend.append("text")
+		//   .attr("x", width - 104)
+		//   .attr("y", 30)
+		//   .attr("dy", "0.32em")
+		//   .text(function(d) { return d; });	
+
+		// colorLegend.style("display", "none")
+	}
+
+	async function transition(option) {
+	  if(option.value == "all sales"){
+	  	  changeCurrentMap(await d3.csv('datagenre.csv'))
+	  }
+	  else if(option.value == "excellent"){
+	  	 changeCurrentMap(await d3.csv('StatSaleHighest.csv'))
+	  }
+	  else if(option.value == "very good"){
+	  	 changeCurrentMap(await d3.csv('StatSale2.25.csv'))
+	  }
+	  else if(option.value == "well above average"){
+	  	 changeCurrentMap(await d3.csv('StatSale1.95.csv'))
+	  }
+	  else if(option.value == "good"){
+	  	 changeCurrentMap(await d3.csv('StatSale1.8.csv'))
+	  }
+	  else if(option.value == "fairly good"){
+	  	 changeCurrentMap(await d3.csv('StatSale1.65.csv'))
+	  }
+	  else if(option.value == "above average"){
+	  	 changeCurrentMap(await d3.csv('StatSale1.5.csv'))
+	  }
+	  else if(option.value == "average"){
+	  	 changeCurrentMap(await d3.csv('StatSale1.35.csv'))
+	  }
+	  else if(option.value == "below average"){
+	  	 changeCurrentMap(await d3.csv('StatSale1.2.csv'))
+	  }
+	  else if(option.value == "poor"){
+	  	 changeCurrentMap(await d3.csv('StatSale1.05.csv'))
+	  }
+	  else if(option.value == "not good at all"){
+	  	 changeCurrentMap(await d3.csv('StatSale0.9.csv'))
+	  }
+	  else if(option.value == "well below average"){
+	  	 changeCurrentMap(await d3.csv('StatSale0.75.csv'))
+	  }
+	  else if(option.value == "awful"){
+	  	 changeCurrentMap(await d3.csv('StatSale0.6.csv'))
+	  }
+	  else if(option.value == "action"){
+	  	 changeCurrentMap(await d3.csv('StatMetricAction.csv'))
+	  }
+	  else if(option.value == "adventure"){
+	  	 changeCurrentMap(await d3.csv('StatMetricAdventure.csv'))
+	  }
+	  else if(option.value == "fighting"){
+	  	 changeCurrentMap(await d3.csv('StatMetricFighting.csv'))
+	  }
+	  else if(option.value == "misc"){
+	  	 changeCurrentMap(await d3.csv('StatMetricMisc.csv'))
+	  }
+	  else if(option.value == "platformer"){
+	  	 changeCurrentMap(await d3.csv('StatMetricPlatformer.csv'))
+	  }
+	  else if(option.value == "puzzle"){
+	  	 changeCurrentMap(await d3.csv('StatMetricPuzzle.csv'))
+	  }
+	  else if(option.value == "racing"){
+	  	 changeCurrentMap(await d3.csv('StatMetricRacing.csv'))
+	  }
+	  else if(option.value == "roleplaying"){
+	  	 changeCurrentMap(await d3.csv('StatMetricRoleplaying.csv'))
+	  }
+	  else if(option.value == "shooter"){
+	  	 changeCurrentMap(await d3.csv('StatMetricShooter.csv'))
+	  }
+	  else if(option.value == "simulation"){
+	  	 changeCurrentMap(await d3.csv('StatMetricSimulation.csv'))
+	  }
+	  else if(option.value == "sport"){
+	  	 changeCurrentMap(await d3.csv('StatMetricSport.csv'))
+	  }
+	  else if(option.value == "strategy"){
+	  	 changeCurrentMap(await d3.csv('StatMetricStrategy.csv'))
+	  }
+	  else{
+	  	return
+	  }
+
+	  changeNaration(option.value)
+	  redrawSVG();
+	}
+
+	function updateStack(){
+		stack = d3.stack()
+	    .keys(listKey)
+	    .order(d3.stackOrderNone)
+    	.offset(d3.stackOffsetWiggle);
+	}
+
+	function changeCurrentMap(newmap){
+		console.log(newmap)
+		newmap = newmap.sort(function(a,b){ return a.Year - b.Year})
+		console.log(newmap)
+		currentMap = newmap
+		drawnMap = copy(currentMap)
+		listKey = Object.keys(currentMap[0]);
+		yearlist = getYearList(currentMap);
+		remove(listKey, 'Year');
+		remove(listKey, 'Total');
+		remove(listKey, 'TOTAL');
+		console.log('listKey')
+		console.log(listKey)
+		listDeactive = []
+
+		updateStack()
+
+		actualLayers = stack(currentMap);
+		currentLayers = stack(currentMap);
+		createChecklistFilter();
+	}
+
+	function createChecklistFilter(){
+		var container = document.getElementById("filter-content");
+
+		container.innerHTML = "";
+
+		for (var i = 0; i < listKey.length; i++) {
+			var div = document.createElement("div");
+			var text = document.createElement("span");
+			var checkbox = document.createElement("input");
+			checkbox.type = 'checkbox';
+			checkbox.name = listKey[i]
+			checkbox.value = i
+			text.innerHTML = listKey[i]
+			checkbox.checked = true
+			checkbox.classList.add("w3-check");
+			checkbox.onchange = function(){changeFilter(this)}
+
+			div.classList.add("w3-half")
+			div.appendChild(checkbox)
+			div.appendChild(text)
+			container.appendChild(div);
+		}
+	}
+	
+	function redrawSVG(){
+		updateStack()
+		x.domain([0, d3.max(yearlist) - d3.min(yearlist)]);
+	    y.domain([d3.min(actualLayers, stackMin), d3.max(actualLayers, stackMax)])
+	    setupYearFilter();
+
+		groups.selectAll('g').remove();
+
+		groups.selectAll('g').data(currentLayers)
+		.enter()
+        .append("g")
+	        .style("fill", function (d,i) {return c10(i)})
+        .append('path')
+			.attr('d', area)
+
+		d3.selectAll('.x_axis').call(xAxis)
+		createLegend();
+	}
+
+	function filterSVG(){
+		drawnMap = copy(currentMap)
+		console.log(currentMap)
+		for (var i = 0; i < drawnMap.length; i++) {
+			for (var ii = 0; ii < listDeactive.length; ii++) {
+				drawnMap[i][listDeactive[ii]] = 0;
+			}
+		}
+
+		console.log('popo')
+		console.log(currentLayers)
+
+		var currentLayers = stack(drawnMap);
+
+		console.log(currentLayers)
+		console.log(listKey)
+
+		d3.selectAll('.x_axis')
+		.transition()
+		.duration(1000)
+		.call(xAxis)
+
+		d3.selectAll("path")
+	      .data(currentLayers)
+	    .transition()
+	      .duration(1000)
+	      .attr("d", area);
+
+	    d3.selectAll("path").exit().remove
+	}
+
+
+	function setupYearFilter(){
+		var start = document.getElementById("startDate");
+		var end = document.getElementById("endDate");
+
+		fakex.domain([d3.min(yearlist), d3.max(yearlist)]);
+		xAxis = d3.axisBottom(fakex).tickArguments([15]).tickFormat(d3.format("d"));
+
+		start.min = fakex.domain()[0]
+		start.max = fakex.domain()[1];
+		start.value = fakex.domain()[0]
+
+		end.min = fakex.domain()[0]
+		end.max = fakex.domain()[1];
+		end.value = fakex.domain()[1]
+	}
+
+	function changeDate(){
+		var start = document.getElementById("startDate").value;
+		var end = document.getElementById("endDate").value;
+
+		var realStart = (start*1) - (fakex.domain()[0]*1)
+		var realEnd = (end*1) - (fakex.domain()[0]*1)
+		console.log(realStart)
+		console.log(realEnd)
+
+		x.domain([realStart, realEnd])
+		console.log(start*1 + d3.min(yearlist)*1)
+		fakex.domain([d3.min(yearlist)*1 + realStart*1, d3.min(yearlist)*1 + realEnd*1]);
+		xAxis = d3.axisBottom(fakex).tickArguments([15]).tickFormat(d3.format("d"));
+
+		filterSVG();
+	}
+
+	function remove(array, element) {
+	    const index = array.indexOf(element);
+	    
+	    if (index !== -1) {
+	        array.splice(index, 1);
+	    }
+	}
+
+	function stackMax(layer) {
+	  return d3.max(layer, function(d) { return d[1]; });
+	}
+
+	function stackMin(layer) {
+	  return d3.min(layer, function(d) { return d[0]; });
+	}
+
+	function copy(o) {
+	   var output, v, key;
+	   output = Array.isArray(o) ? [] : {};
+	   for (key in o) {
+	       v = o[key];
+	       output[key] = (typeof v === "object") ? copy(v) : v;
+	   }
+	   return output;
+	}
+
+	//bikin template streamgraph===========================================================================================
+	var area = d3.area()
+	    .x(function(d, i) { return x(i); })
+	    .y0(function(d) { return y(d[0]); })
+	    .y1(function(d) { return y(d[1]); })
+	    .curve(d3.curveCardinal);
+    //data===========================================================================================
+	var c10 = d3.scaleOrdinal(d3.schemeCategory10);
+	
+	var currentMap;
+	var drawnMap;
+	var listKey;
+	var listDeactive;
+	
+	var currentLayers;
+	var actualLayers;
+
+	var yearlist;
+
+	changeCurrentMap(mymap);
+	//setup layout===========================================================================================
+	var width = 900, height = 400;
+	
+	var x = d3.scaleLinear()
+	    .range([0, width])
+	    .domain([0, d3.max(yearlist) - d3.min(yearlist)]);
+
+	var y = d3.scaleLinear()
+	    .range([height, 0])
+	    .domain([d3.min(actualLayers, stackMin), d3.max(actualLayers, stackMax)])
+
+	var fakex = d3.scaleLinear()
+	    .range([0, width])
+	    .domain([d3.min(yearlist), d3.max(yearlist)]);
+
+	var xAxis = d3.axisBottom(fakex).tickArguments([15]).tickFormat(d3.format("d"));
+	//ngegambar===========================================================================================
+	var svg = d3.select(".gardenDiv").append("svg")
+	    .attr("width", width + 60)
+	    .attr("height", height + 50)
+
+	var groups = svg
+	.append('g')
+	.attr('class', 'graph')
+
+	redrawSVG();
+
+	 svg.append("g")
+      .attr("class", "x_axis")
+      .attr("transform", "translate(0," + (height) + ")")
+      .call(xAxis)
+
+	var legend = svg.append("g")
+    //init stuff===========================================================================================
+    var DOMdropdown = document.getElementById("mode");
+    changeMode(DOMdropdown);
+    DOMdropdown.onchange = function(){changeMode(this)}
+
+    var DOMoption = document.getElementById("option");
+    DOMoption.onchange = function(){transition(this)}
+
+    var DOMstartDate = document.getElementById("startDate");
+    DOMstartDate.onchange = function(){changeDate()}
+
+    var DOMendDate = document.getElementById("endDate");
+    DOMendDate.onchange = function(){changeDate()}
+
+    createChecklistFilter();
+    createLegend();
+    changeNaration('all sales')
+}
+main();
+    
+
+</script>
